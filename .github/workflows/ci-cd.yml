@@ -1,0 +1,62 @@
+# .github/workflows/ci-cd.yml
+# Ragdoll Breeder Tools - CI/CD Pipeline
+# Purpose: Fast, reliable, production-grade automation for Next.js 15 + TypeScript + Vitest + Drizzle
+# Priorities: Performance first, correctness first, maintainability.
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Manual trigger
+
+env:
+  NODE_VERSION: 24
+  # Cache keys for better performance
+  CACHE_KEY_PREFIX: ragdoll-breeder-deps
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # CI: Quality Gate (Lint, Type Check, Test, Build)
+  # ─────────────────────────────────────────────────────────────
+  ci:
+    name: CI - Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: TypeScript Type Check
+        run: npm run type-check || echo "Type check command not found, running tsc instead" && npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint || echo "Lint command not found, skipping or using eslint directly" && npx eslint . --max-warnings=0
+
+      - name: Run Unit Tests (Vitest)
+        run: npm run test:run
+        env:
+          # Add test-specific env vars if needed (e.g. mock Supabase)
+          NODE_ENV: test
+
+      - name: Build Production
+        run: npm run build
+        env:
+          # Minimal env vars needed for build
+          NEXT_PUBLIC_SUPABASE_URL: "https://dummy.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-key"
