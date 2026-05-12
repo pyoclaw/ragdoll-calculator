@@ -8,6 +8,8 @@ export const metadata = {
   title: "Dashboard — Ragdoll Breeder Tools",
 };
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Render the dashboard page for an authenticated user.
  *
