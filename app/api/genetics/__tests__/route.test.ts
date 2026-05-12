@@ -228,7 +228,7 @@ describe("POST /api/genetics", () => {
     expect(json.offspring.length).toBeGreaterThan(0);
   });
 
-  it("returns 500 for malformed (non-JSON) request body", async () => {
+  it("returns 400 for malformed (non-JSON) request body", async () => {
     const req = new NextRequest("http://localhost/api/genetics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -236,10 +236,10 @@ describe("POST /api/genetics", () => {
     });
     const res = await POST(req);
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
     const json = await res.json();
     expect(json.success).toBe(false);
-    expect(json.error).toMatch(/Server error/);
+    expect(json.error).toMatch(/invalid json|bad request|malformed/i);
   });
 
   it("handles a heterozygous cross and returns multiple phenotypes", async () => {
