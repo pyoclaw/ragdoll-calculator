@@ -98,6 +98,32 @@ describe("Phenotype Mapping", () => {
       };
       expect(genotypeToColor(genotype, "female")).toBe("blue-cream");
     });
+
+    it("should identify red in homozygous O females", () => {
+      const genotype = {
+        ...baseGenotype,
+        O: ["O", "O"] as [string, string],
+      };
+      expect(genotypeToColor(genotype, "female")).toBe("red");
+    });
+
+    it("should identify cream in homozygous O dilute females", () => {
+      const genotype = {
+        ...baseGenotype,
+        D: ["d", "d"] as [string, string],
+        O: ["O", "O"] as [string, string],
+      };
+      expect(genotypeToColor(genotype, "female")).toBe("cream");
+    });
+
+    it("should identify tortoiseshell even if B locus is homozygous", () => {
+      const genotype = {
+        ...baseGenotype,
+        B: ["B", "B"] as [string, string],
+        O: ["O", "o"] as [string, string],
+      };
+      expect(genotypeToColor(genotype, "female")).toBe("tortoiseshell");
+    });
   });
 
   describe("Pattern Phenotype (Wg & S Loci)", () => {

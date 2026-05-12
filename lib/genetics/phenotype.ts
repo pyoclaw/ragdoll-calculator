@@ -42,20 +42,12 @@ export function genotypeToColor(genotype: Genotype, sex: Sex): Color {
   // Check for red/cream (O allele presence)
   const hasOAllele = hasAllele(oAlleles, "O");
 
-  // Males with O allele are fully red/cream
-  if (sex === "male" && hasOAllele) {
-    return isDense ? "red" : "cream";
-  }
-
-  // Females with O allele and heterozygous at B locus are tortoiseshell
-  if (sex === "female" && hasOAllele) {
-    if (!isHomozygous(bAlleles)) {
-      // Heterozygous B locus with O = tortoiseshell expression
-      return isDense ? "tortoiseshell" : "blue-cream";
-    }
-    // Homozygous recessive b with O = blue-cream (dilute tortoiseshell)
-    // This should have been caught earlier, but being explicit
-    if (dominantB === "b" && hasOAllele) {
+  if (hasOAllele) {
+    if (sex === "male" || isHomozygous(oAlleles)) {
+      // Males with O or homozygous females (O/O) are fully red/cream
+      return isDense ? "red" : "cream";
+    } else {
+      // Heterozygous females (O/o) are tortoiseshell/blue-cream
       return isDense ? "tortoiseshell" : "blue-cream";
     }
   }
