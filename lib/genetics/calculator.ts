@@ -44,26 +44,32 @@ function generateGametes(genotype: Genotype, sex: Sex): Gamete[] {
 
     const locus = loci[locusIndex];
     const alleles = genotype[locus] as [Allele, Allele] | [Allele];
+    const allele0 = alleles[0]!;
+    const allele1 = alleles[1];
 
     if (X_LINKED_LOCI.has(locus)) {
       // X-linked locus
       if (sex === "male") {
         // Males have only one X allele (hemizygous)
-        currentAlleles[locus] = alleles[0];
+        currentAlleles[locus] = allele0;
         recurse(locusIndex + 1, currentAlleles);
       } else {
         // Females have two X alleles (diploid)
-        currentAlleles[locus] = alleles[0];
+        currentAlleles[locus] = allele0;
         recurse(locusIndex + 1, { ...currentAlleles });
-        currentAlleles[locus] = alleles[1];
-        recurse(locusIndex + 1, { ...currentAlleles });
+        if (allele1) {
+          currentAlleles[locus] = allele1;
+          recurse(locusIndex + 1, { ...currentAlleles });
+        }
       }
     } else {
       // Autosomal locus
-      currentAlleles[locus] = alleles[0];
+      currentAlleles[locus] = allele0;
       recurse(locusIndex + 1, { ...currentAlleles });
-      currentAlleles[locus] = alleles[1];
-      recurse(locusIndex + 1, { ...currentAlleles });
+      if (allele1) {
+        currentAlleles[locus] = allele1;
+        recurse(locusIndex + 1, { ...currentAlleles });
+      }
     }
   }
 
