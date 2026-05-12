@@ -1,18 +1,19 @@
 /**
- * Site header / nav. Server Component that reads current auth state to show
- * Sign In vs. Dashboard. Layout calls revalidatePath after login/logout so
- * this updates after auth state changes.
+ * Site header / nav. Server Component that reads current auth state via
+ * Supabase JWT claims and shows Sign In vs. Dashboard accordingly.
  *
- * Note: this is UI state only. Real authorization is enforced in the proxy
- * (redirect) and in individual page/route handlers (getCurrentUser checks).
+ * Auth state is enforced in proxy.ts and individual page handlers — this
+ * is UI state only.
  */
 
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/db/client";
+import { createClient } from "@/lib/supabase/server";
+import { buttonVariants } from "@/components/ui/button";
 
 export async function SiteHeader() {
-  const user = await getCurrentUser();
-  const isAuthed = user !== null;
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const isAuthed = data?.claims != null;
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
@@ -47,24 +48,18 @@ export async function SiteHeader() {
           </Link>
 
           {isAuthed ? (
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 transition"
-            >
+            <Link href="/dashboard" className={buttonVariants()}>
               Dashboard
             </Link>
           ) : (
             <div className="flex items-center gap-3">
               <Link
-                href="/login"
+                href="/auth/login"
                 className="text-gray-700 hover:text-gray-900 transition"
               >
                 Sign in
               </Link>
-              <Link
-                href="/signup"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 transition"
-              >
+              <Link href="/auth/sign-up" className={buttonVariants()}>
                 Sign up
               </Link>
             </div>

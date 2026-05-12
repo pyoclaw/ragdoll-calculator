@@ -1,22 +1,29 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/db/client";
-import { logout } from "@/app/actions/auth";
+import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/logout-button";
+import { buttonVariants } from "@/components/ui/button";
 
 export const metadata = {
   title: "Dashboard — Ragdoll Breeder Tools",
 };
 
 export default async function DashboardPage() {
-  // Defense in depth: proxy already redirects, but verify here too.
-  // (Per Next.js auth guide: security checks belong close to data, not just middleware.)
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect("/login");
+  // Defense in depth: proxy already redirects unauthed users away from
+  // /dashboard, but verify here too per the Next.js auth guide
+  // ("security checks belong close to data, not just middleware").
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    redirect("/auth/login");
   }
 
+  const claims = data.claims;
   const displayName =
-    (user.user_metadata?.name as string | undefined) ?? user.email;
+    (claims.user_metadata?.name as string | undefined) ??
+    (claims.email as string | undefined) ??
+    "there";
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -26,16 +33,9 @@ export default async function DashboardPage() {
             <h1 className="text-3xl font-bold text-gray-900">
               Welcome, {displayName}
             </h1>
-            <p className="text-gray-600 mt-1">{user.email}</p>
+            <p className="text-gray-600 mt-1">{claims.email as string}</p>
           </div>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition"
-            >
-              Sign out
-            </button>
-          </form>
+          <LogoutButton />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -62,15 +62,12 @@ export default async function DashboardPage() {
             coming soon — for now, head to the calculator to start planning.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/genetics"
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition"
-            >
+            <Link href="/genetics" className={buttonVariants()}>
               Open Calculator
             </Link>
             <Link
               href="/litter-planner"
-              className="px-4 py-2 bg-white border border-gray-300 text-gray-800 text-sm font-medium rounded hover:bg-gray-50 transition"
+              className={buttonVariants({ variant: "outline" })}
             >
               Plan a Litter
             </Link>
