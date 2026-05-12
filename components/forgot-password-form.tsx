@@ -16,6 +16,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
+/**
+ * Renders a "Forgot password" UI that collects an email address and initiates Supabase's password reset flow.
+ *
+ * Shows either a form (email input, submit button, and optional error message) or a success confirmation prompting the user to check their email.
+ *
+ * @param className - Optional additional CSS class names applied to the outer container
+ * @param props - Additional props spread onto the outer `<div>` container
+ * @returns A JSX element containing the forgot-password form or the email-sent confirmation
+ */
 export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)

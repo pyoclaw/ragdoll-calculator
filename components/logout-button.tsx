@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
+/**
+ * Renders a "Sign out" button that signs the current user out, refreshes auth-dependent layout state, and navigates to the home page.
+ *
+ * @returns The React element for the logout button.
+ */
 export function LogoutButton() {
   const router = useRouter()
 

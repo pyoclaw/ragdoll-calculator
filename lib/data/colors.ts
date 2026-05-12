@@ -95,14 +95,19 @@ export const COLORS: Record<string, ColorInfo> = {
 };
 
 /**
- * Get color information by color name
+ * Retrieve the color catalog entry for a given color identifier.
+ *
+ * @param colorName - The color identifier key to look up in the catalog
+ * @returns The corresponding `ColorInfo` if present, `undefined` otherwise
  */
 export function getColorInfo(colorName: string): ColorInfo | undefined {
   return COLORS[colorName];
 }
 
 /**
- * Get all available colors
+ * List all available color identifiers.
+ *
+ * @returns An array of color identifier strings defined in the `COLORS` catalog
  */
 export function getAllColors(): string[] {
   return Object.keys(COLORS);

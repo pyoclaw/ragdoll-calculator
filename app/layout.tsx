@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   description: "Genetics calculator and reference guides for Ragdoll cat breeders",
 };
 
+/**
+ * Root layout component that wraps pages with global fonts, site header, content container, and footer.
+ *
+ * @param children - Page content to render inside the layout
+ * @returns The root HTML document structure with applied font CSS variables, header, main content wrapper, and footer
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

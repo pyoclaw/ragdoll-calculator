@@ -17,6 +17,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
+/**
+ * Renders a login form that authenticates with Supabase and navigates to /dashboard on successful sign-in.
+ *
+ * @param className - Optional additional CSS class names applied to the outer container.
+ * @param props - Additional props spread onto the outer container `div`.
+ * @returns The rendered login form JSX element.
+ */
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

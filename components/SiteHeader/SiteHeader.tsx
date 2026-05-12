@@ -10,6 +10,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 
+/**
+ * Render the site header and top navigation, showing auth-dependent actions.
+ *
+ * The header includes brand/link to home, static navigation links (Reference, Calculator, Litter Planner),
+ * and either a Dashboard action when Supabase auth claims are present or Sign in / Sign up actions otherwise.
+ *
+ * @returns The header React element containing branding, navigation links, and the appropriate auth actions.
+ */
 export async function SiteHeader() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

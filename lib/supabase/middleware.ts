@@ -13,6 +13,12 @@ const PUBLIC_PATHS = ["/", "/reference", "/genetics", "/litter-planner"];
  */
 const AUTH_PATH_PREFIX = "/auth";
 
+/**
+ * Determines whether a request pathname is treated as publicly accessible.
+ *
+ * @param pathname - The request pathname to check (e.g., request.nextUrl.pathname)
+ * @returns `true` if the pathname is an auth route, an API route (`/api/*`), or matches a known public path; `false` otherwise.
+ */
 function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith(AUTH_PATH_PREFIX)) return true;
   if (pathname.startsWith("/api/")) return true; // API has its own auth checks
@@ -20,10 +26,13 @@ function isPublicPath(pathname: string): boolean {
 }
 
 /**
- * Refresh the Supabase session cookie and, if needed, redirect the user
- * to /auth/login when they try to access a protected page.
+ * Refreshes Supabase session cookies for the incoming request and enforces authentication redirects for protected routes.
  *
- * Called from proxy.ts on every non-static request.
+ * @param request - The incoming `NextRequest`; used to read/write cookies and determine the requested pathname.
+ * @returns A `NextResponse` that is either:
+ *  - a redirect to `/auth/login` with a `next` query when an unauthenticated user requests a protected page,
+ *  - a redirect to `/dashboard` when an authenticated user visits `/auth/login` or `/auth/sign-up`,
+ *  - or a response preserving any updated Supabase cookies to keep client/server session state synchronized.
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

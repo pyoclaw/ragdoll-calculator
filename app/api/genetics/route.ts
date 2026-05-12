@@ -36,6 +36,15 @@ interface GeneticsResponse {
   error?: string;
 }
 
+/**
+ * Handle POST /api/genetics requests: validate parent genotypes and return computed offspring probabilities.
+ *
+ * @param request - HTTP request whose JSON body must include `parent1` and `parent2` genotypes and may include `parent1Sex` and `parent2Sex`
+ * @returns A NextResponse containing a `GeneticsResponse`:
+ * - On success: `success: true` and `offspring` with computed probabilities.
+ * - On client error (e.g., missing or invalid genotypes): `success: false`, `error` with a message, HTTP 400.
+ * - On unexpected server error: `success: false`, `error` with a message, HTTP 500.
+ */
 export async function POST(request: NextRequest): Promise<NextResponse<GeneticsResponse>> {
   try {
     const body = await request.json() as GeneticsRequest;
@@ -86,7 +95,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<GeneticsR
   }
 }
 
-// Support OPTIONS for CORS
+/**
+ * Responds to CORS preflight (OPTIONS) requests with permissive CORS headers.
+ *
+ * @returns A JSON response with an empty body and headers allowing any origin, the `POST` and `OPTIONS` methods, and the `Content-Type` request header.
+ */
 export async function OPTIONS(): Promise<NextResponse> {
   return NextResponse.json({}, {
     headers: {

@@ -22,17 +22,30 @@ interface Gamete {
 }
 
 /**
- * Generate all possible gametes (haploid genotypes) from a parent genotype.
- * For autosomal loci: 50% each allele.
- * For X-linked loci in females: 50% each allele.
- * For X-linked loci in males: 100% the single allele.
+ * Produce all distinct haploid gametes from a parent genotype, taking parental sex into account.
+ *
+ * For autosomal loci each allele present is emitted as a separate gamete possibility.
+ * For X-linked loci, a male parent contributes the single (hemizygous) X allele and a female parent contributes each X allele as separate possibilities.
+ * Each returned Gamete includes an `alleles` map (locus → allele) and a `frequency` representing the probability of that gamete (normalized over all combinations).
+ *
+ * @param genotype - Mapping of locus names to allele tuples (e.g., `[allele0]` or `[allele0, allele1]`)
+ * @param sex - Parent sex which determines X-linked locus behavior
+ * @returns An array of Gamete objects with `alleles` and their normalized `frequency` (probability)
  */
 function generateGametes(genotype: Genotype, sex: Sex): Gamete[] {
   const loci = Object.keys(genotype).sort();
   const gametes: Map<string, number> = new Map();
 
   /**
-   * Recursive function to generate all combinations.
+   * Builds every possible haploid allele combination for the provided genotype and sex and records their counts.
+   *
+   * This function advances through sorted loci starting at `locusIndex`, appending an allele choice for each locus
+   * to `currentAlleles`. For X-linked loci it treats males as hemizygous (only `allele0`) and females as diploid
+   * (both allele possibilities if present). Each complete allele map is stringified and used to increment a count
+   * in the enclosing `gametes` map.
+   *
+   * @param locusIndex - Index of the locus to process next in the sorted locus list
+   * @param currentAlleles - Partial mapping of locus names to selected alleles for the current recursion path
    */
   function recurse(locusIndex: number, currentAlleles: Record<string, Allele>) {
     if (locusIndex === loci.length) {
@@ -89,7 +102,16 @@ function generateGametes(genotype: Genotype, sex: Sex): Gamete[] {
 }
 
 /**
- * Combine two gametes (one from each parent) into an offspring genotype.
+ * Merge two haploid gametes into a diploid offspring genotype.
+ *
+ * Each locus present in either gamete becomes a two-allele entry in the returned genotype.
+ *
+ * @param gamete1 - Gamete contributed by the first parent
+ * @param gamete2 - Gamete contributed by the second parent
+ * @param parent1Sex - Sex of the first parent (accepted but not used by this function)
+ * @param parent2Sex - Sex of the second parent (accepted but not used by this function)
+ * @returns A Genotype mapping each locus to a two-element allele tuple representing the offspring's alleles
+ * @throws Error if either gamete is missing an allele for a locus (including X-linked loci)
  */
 function combineGametes(
   gamete1: Gamete,
@@ -126,9 +148,10 @@ function combineGametes(
 }
 
 /**
- * Determine the sex of offspring from parental sexes.
- * Parent 1 provides the egg (always X); parent 2 provides sperm (X or Y).
- * By convention, parent 1 is always female.
+ * Determine offspring sex based on whether the second parent's gamete carries a Y chromosome.
+ *
+ * @param gamete2HasY - Whether the second parent's gamete contains a Y chromosome
+ * @returns `"male"` if `gamete2HasY` is `true`, `"female"` otherwise
  */
 function getOffspringSex(parent1Sex: Sex, parent2Sex: Sex, gamete2HasY: boolean): Sex {
   // Parent 1 (female) provides X; Parent 2 (male) provides X or Y
@@ -136,10 +159,13 @@ function getOffspringSex(parent1Sex: Sex, parent2Sex: Sex, gamete2HasY: boolean)
 }
 
 /**
- * Main genetics calculator: compute all possible offspring from two parents.
+ * Compute the probability distribution of offspring phenotypes produced by two parents.
  *
- * Returns an array of phenotypes with their probabilities.
- * Assumes parent1 is female and parent2 is male (for correct X-linked inheritance).
+ * @param parent1Genotype - Genotype of the first parent.
+ * @param parent2Genotype - Genotype of the second parent.
+ * @param parent1Sex - Sex of the first parent; affects gamete generation for X-linked loci. Defaults to `"female"`.
+ * @param parent2Sex - Sex of the second parent; affects gamete generation for X-linked loci. Defaults to `"male"`.
+ * @returns An array of phenotypes with their probabilities (each probability rounded to 4 decimals), sorted in descending order by probability.
  */
 export function cross(
   parent1Genotype: Genotype,
@@ -200,8 +226,11 @@ export function cross(
 }
 
 /**
- * Helper function to get all possible phenotypes from a Punnett cross.
- * Useful for examining the full genetic outcome space.
+ * Compute all possible offspring phenotypes and their probabilities from a cross between two parent genotypes.
+ *
+ * @param parent1Genotype - Genotype of the first parent
+ * @param parent2Genotype - Genotype of the second parent
+ * @returns An array of offspring phenotype probability entries; each entry contains a `phenotype` and its `probability` (probabilities are rounded to four decimals)
  */
 export function getAllPossiblePhenotypes(
   parent1Genotype: Genotype,
@@ -211,7 +240,10 @@ export function getAllPossiblePhenotypes(
 }
 
 /**
- * Helper to summarize offspring probabilities by color.
+ * Aggregate total probability for each phenotype color from a list of offspring outcomes.
+ *
+ * @param offspring - Array of offspring probability objects to aggregate
+ * @returns A map from phenotype `color` to the summed probability for that color
  */
 export function summarizeByColor(
   offspring: OffspringProbability[]
@@ -225,7 +257,10 @@ export function summarizeByColor(
 }
 
 /**
- * Helper to summarize offspring probabilities by pattern.
+ * Aggregates offspring probabilities by phenotype pattern.
+ *
+ * @param offspring - List of offspring probability entries to summarize
+ * @returns A map where each key is a phenotype `pattern` and each value is the total probability for that pattern
  */
 export function summarizeByPattern(
   offspring: OffspringProbability[]

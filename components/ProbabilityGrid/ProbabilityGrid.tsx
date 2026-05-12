@@ -14,6 +14,14 @@ interface ProbabilityGridProps {
   showDetails?: boolean;
 }
 
+/**
+ * Render a summary of offspring phenotype probabilities grouped by color and pattern, with an optional detailed grid of phenotype cards.
+ *
+ * @param offspring - Array of offspring probability entries. Each entry must include `phenotype.color`, `phenotype.pattern`, and `probability`; probabilities are summed per color/pattern to build the summaries.
+ * @param title - Title displayed above the detailed grid (defaults to "Predicted Offspring").
+ * @param showDetails - When `true`, render a detailed grid of `CatCard` items; when `false`, show a compact count message.
+ * @returns A React element that displays aggregated distributions by color and pattern and either a detailed grid of phenotype cards (when `showDetails` is true) or a compact count summary. 
+ */
 export function ProbabilityGrid({
   offspring,
   title = "Predicted Offspring",

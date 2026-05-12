@@ -17,6 +17,17 @@ interface CatCardProps {
   showSex?: boolean;
 }
 
+/**
+ * Renders a card displaying a cat phenotype: color swatch, computed display name, pattern/overlay text,
+ * optional sex label, and an optional probability percentage; the card becomes interactive when `onClick` is provided.
+ *
+ * @param phenotype - Phenotype data used to compute display name, color swatch, sex, pattern, and overlay.
+ * @param probability - Optional probability (0–1). When > 0, shown as a percentage with one decimal place.
+ * @param onClick - Optional click handler; when provided the card receives hover/scale styling.
+ * @param className - Optional additional CSS classes applied to the outer card container.
+ * @param showSex - When true, displays a male/female label derived from `phenotype.sex`.
+ * @returns The rendered JSX element representing the cat card.
+ */
 export function CatCard({
   phenotype,
   probability,

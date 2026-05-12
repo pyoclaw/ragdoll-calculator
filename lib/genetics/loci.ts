@@ -39,8 +39,12 @@ export const VALID_ALLELES: Record<string, Set<Allele>> = {
 export const X_LINKED_LOCI = new Set(["O"]);
 
 /**
- * Validate that a genotype contains only valid alleles at each locus.
- * Throws if invalid.
+ * Ensure each locus in `genotype` contains only permitted alleles and respects X-linked allele count limits.
+ *
+ * @param genotype - Mapping from locus name to an array of allele identifiers.
+ * @throws Error if a locus name is not recognized.
+ * @throws Error if an allele at a locus is not in that locus's allowed set (message includes valid alleles).
+ * @throws Error if an X-linked locus contains more than two alleles.
  */
 export function validateGenotype(genotype: Genotype): void {
   for (const [locusName, alleles] of Object.entries(genotype)) {
@@ -66,8 +70,12 @@ export function validateGenotype(genotype: Genotype): void {
 }
 
 /**
- * Get the dominant allele at a locus from a pair.
- * Used in phenotype determination.
+ * Determine the most dominant allele for a locus from the provided alleles.
+ *
+ * @param locus - Locus name to evaluate (must exist in the dominance map)
+ * @param alleles - One or two alleles to compare for dominance
+ * @returns The allele from `alleles` with the highest dominance for `locus`; if no allele appears in the locus dominance list, returns the first entry of `alleles`
+ * @throws Error if `locus` has no dominance mapping
  */
 export function getDominantAllele(locus: string, alleles: Allele[]): Allele {
   const dominanceOrder = ALLELE_DOMINANCE[locus];
@@ -86,7 +94,10 @@ export function getDominantAllele(locus: string, alleles: Allele[]): Allele {
 }
 
 /**
- * Determine if two alleles are homozygous.
+ * Determine whether the provided allele set represents a homozygous genotype.
+ *
+ * @param alleles - One or two alleles for a locus; a single allele represents a hemizygous state (e.g., X-linked in males)
+ * @returns `true` if both alleles are identical or only one allele is provided, `false` otherwise
  */
 export function isHomozygous(alleles: [Allele, Allele] | [Allele]): boolean {
   if (alleles.length === 1) return true; // Hemizygous (X-linked, male)
@@ -94,7 +105,11 @@ export function isHomozygous(alleles: [Allele, Allele] | [Allele]): boolean {
 }
 
 /**
- * Determine if an allele pair contains a specific allele.
+ * Check whether an allele array contains a given allele.
+ *
+ * @param alleles - One or two alleles representing a locus (hemizygous or paired)
+ * @param targetAllele - The allele to search for
+ * @returns `true` if `targetAllele` is present in `alleles`, `false` otherwise.
  */
 export function hasAllele(
   alleles: [Allele, Allele] | [Allele],

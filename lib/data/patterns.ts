@@ -37,26 +37,21 @@ export const PATTERNS: Record<string, PatternInfo> = {
 };
 
 /**
- * Pattern genetic rules:
- * The Wg (white glove) locus:
- *   - w_g/w_g = colorpoint (no white gloves)
- *   - w_g/+ = mitted (white gloves appear)
- *   - +/+ = colorpoint (no white gloves)
+ * Retrieve metadata for a named Ragdoll pattern.
  *
- * The S (piebald spotting) locus:
- *   - s/s = no piebald spotting (colorpoint or mitted, depending on Wg)
- *   - S/_ = piebald spotting present (bicolor pattern)
- *
- * Pattern determination priority:
- * 1. If any S allele → bicolor (dominant for extensive white)
- * 2. Else if w_g/+ (heterozygous) → mitted (white paws only)
- * 3. Else → colorpoint (no white markings)
+ * @param patternName - The pattern key to look up (e.g., "colorpoint", "mitted", "bicolor")
+ * @returns The `PatternInfo` for `patternName`, or `undefined` if the pattern is not found
  */
 
 export function getPatternInfo(patternName: string): PatternInfo | undefined {
   return PATTERNS[patternName];
 }
 
+/**
+ * Lists all available pattern identifiers.
+ *
+ * @returns An array of pattern keys present in the `PATTERNS` catalog.
+ */
 export function getAllPatterns(): string[] {
   return Object.keys(PATTERNS);
 }
@@ -85,16 +80,30 @@ export const OVERLAYS: Record<string, OverlayInfo> = {
   },
 };
 
+/**
+ * Retrieve metadata for a named overlay phenotype.
+ *
+ * @param overlayName - The overlay key to look up (for example, "none" or "lynx")
+ * @returns The corresponding OverlayInfo if found, `undefined` otherwise.
+ */
 export function getOverlayInfo(overlayName: string): OverlayInfo | undefined {
   return OVERLAYS[overlayName];
 }
 
+/**
+ * List all defined overlay option keys.
+ *
+ * @returns An array of overlay names (keys of `OVERLAYS`).
+ */
 export function getAllOverlays(): string[] {
   return Object.keys(OVERLAYS);
 }
 
 /**
- * Human-readable summary of the genetic basis for a pattern
+ * Format a display string describing a pattern.
+ *
+ * @param pattern - The pattern key to look up (e.g., "colorpoint", "mitted", "bicolor")
+ * @returns The string "`<name>: <description>`" for the matched pattern, or `"Unknown pattern"` if no entry exists
  */
 export function describePattern(pattern: string): string {
   const info = getPatternInfo(pattern);

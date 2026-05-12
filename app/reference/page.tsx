@@ -7,7 +7,13 @@ import { getAllPatterns } from "@/lib/data/patterns";
 import { Phenotype } from "@/lib/genetics/types";
 
 /**
- * Reference page - showcase of all Ragdoll color and pattern combinations
+ * Render the Ragdoll Color & Pattern Reference page showing every color and pattern combination.
+ *
+ * The page includes explanatory sections about colors, patterns, overlays, and genetic inheritance,
+ * and a responsive grid that renders a CatCard for each generated phenotype (both "none" and
+ * "lynx" overlay variants for every color/pattern pair).
+ *
+ * @returns A React element containing the complete reference page layout and the grid of CatCard components.
  */
 export default function ReferencePage() {
   const colors = getAllColors();

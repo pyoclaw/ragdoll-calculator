@@ -3,6 +3,14 @@ import { Input as InputPrimitive } from "@base-ui/react/input"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Render a themed input element with default styling, merged class names, and forwarded native input props.
+ *
+ * @param className - Additional CSS classes to append to the component's default styles
+ * @param type - Value for the input's `type` attribute (e.g., "text", "password")
+ * @param props - Remaining native `<input>` props which are forwarded to the rendered element
+ * @returns The input element with `data-slot="input"`, merged class names, and all provided props applied
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive

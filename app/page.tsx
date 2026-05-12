@@ -3,7 +3,11 @@
 import Link from "next/link";
 
 /**
- * Landing page / home
+ * Render the landing page for Ragdoll Breeder Tools, providing navigation and access to the app's main utilities.
+ *
+ * Renders a hero section with primary navigation links, a features grid linking to the Color & Pattern Reference, Genetics Calculator, and Litter Planner, an informational section explaining Ragdoll genetics, and a getting-started checklist.
+ *
+ * @returns The landing page's JSX element.
  */
 export default function Home() {
   const features = [

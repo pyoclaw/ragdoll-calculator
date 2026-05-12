@@ -6,6 +6,15 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+/**
+ * Renders the sign-up success confirmation page.
+ *
+ * Displays a centered, full-height layout containing a card with a title,
+ * a brief description prompting email confirmation, and a short message
+ * instructing the user to check their email before signing in.
+ *
+ * @returns A JSX element rendering the sign-up success confirmation page.
+ */
 export default function Page() {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

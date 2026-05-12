@@ -1,5 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+/**
+ * Render an error page that displays a centered card with an error message.
+ *
+ * @param searchParams - A promise that resolves to an object which may contain an `error` string; when present the page shows `Code error: {error}`, otherwise a generic fallback message is shown.
+ * @returns A React element containing a centered card that displays either `Code error: {error}` or `An unspecified error occurred.`
+ */
 export default async function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
   const params = await searchParams
 

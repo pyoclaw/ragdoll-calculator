@@ -7,8 +7,12 @@ import { cross } from "@/lib/genetics/calculator";
 import { Genotype, OffspringProbability } from "@/lib/genetics/types";
 
 /**
- * Genetics Calculator Page
- * Main feature: pair two Ragdoll cats and see predicted offspring
+ * Page component for selecting two Ragdoll parent genotypes and calculating predicted offspring phenotype probabilities.
+ *
+ * Renders two genotype builders (female and male), a calculate action that runs a genetic cross, and a results area
+ * showing predicted offspring phenotype probabilities with copy and print actions.
+ *
+ * @returns The rendered page element containing genotype selection panels, calculate controls, and the offspring results UI.
  */
 export default function GeneticsPage() {
   const [parent1Genotype, setParent1Genotype] = useState<Genotype>({

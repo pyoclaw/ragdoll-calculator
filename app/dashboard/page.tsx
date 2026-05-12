@@ -8,6 +8,13 @@ export const metadata = {
   title: "Dashboard — Ragdoll Breeder Tools",
 };
 
+/**
+ * Render the dashboard page for an authenticated user.
+ *
+ * Enforces authentication and redirects to `/auth/login` when the user's claims are missing or invalid.
+ *
+ * @returns A JSX element representing the dashboard UI that greets the user (by name or email), displays the user's email, shows three metric cards (Cats registered, Crosses planned, Litters recorded), and provides navigation links to the genetics calculator and litter planner.
+ */
 export default async function DashboardPage() {
   // Defense in depth: proxy already redirects unauthed users away from
   // /dashboard, but verify here too per the Next.js auth guide

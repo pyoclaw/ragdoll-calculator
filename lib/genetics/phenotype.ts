@@ -20,11 +20,15 @@ import {
 } from "./loci";
 
 /**
- * Determine color phenotype from B, D, O loci and sex.
- * Rules:
- * - B locus: B > b > b_l
- * - D locus: D > d (dense > dilute)
- * - O locus: X-linked; affects color in males and expression in heterozygous females
+ * Derives the coat color from the B, D and O loci while accounting for the animal's sex.
+ *
+ * The function treats B alleles with dominance order B > b > b_l, D as dense (D) vs dilute (d),
+ * and O as an X-linked red allele that produces sex-dependent red/cream or tortoiseshell/blue-cream
+ * expression. The genotype must include loci B, D and O.
+ *
+ * @param genotype - Genotype object containing loci `B`, `D`, and `O`
+ * @param sex - `"male"` or `"female"`, which affects O-locus expression
+ * @returns One of: `"red"`, `"cream"`, `"tortoiseshell"`, `"blue-cream"`, `"seal"`, `"blue"`, `"chocolate"`, `"lilac"`, `"cinnamon"`, or `"fawn"`
  */
 export function genotypeToColor(genotype: Genotype, sex: Sex): Color {
   const bAlleles = genotype.B as [Allele, Allele];
@@ -70,11 +74,10 @@ export function genotypeToColor(genotype: Genotype, sex: Sex): Color {
 }
 
 /**
- * Determine pattern phenotype from Wg (white glove) and S (piebald spotting) loci.
- * Rules:
- * - Wg: heterozygous (w_g/+) = mitted pattern
- * - S: at least one S allele = bicolor pattern
- * - Colorpoint: neither condition met
+ * Determine the coat pattern from the genotype's Wg and S loci.
+ *
+ * @param genotype - Genotype object containing Wg and S loci used to infer pattern
+ * @returns `"bicolor"` if an `S` allele is present, `"mitted"` if Wg is heterozygous containing `w_g` and `+`, otherwise `"colorpoint"`
  */
 export function genotypeToPattern(genotype: Genotype): Pattern {
   const wgAlleles = genotype.Wg as [Allele, Allele];
@@ -99,10 +102,9 @@ export function genotypeToPattern(genotype: Genotype): Pattern {
 }
 
 /**
- * Determine overlay phenotype from Ta (agouti/tabby) locus.
- * Rules:
- * - T^a (agouti) present = lynx overlay
- * - t^b (non-agouti) homozygous = no overlay (solid points)
+ * Determine the overlay phenotype based on the Ta (agouti/tabby) locus.
+ *
+ * @returns `"lynx"` if the Ta alleles include `T^a`, `"none"` otherwise.
  */
 export function genotypeToOverlay(genotype: Genotype): Overlay {
   const taAlleles = genotype.Ta as [Allele, Allele];
@@ -116,8 +118,12 @@ export function genotypeToOverlay(genotype: Genotype): Overlay {
 }
 
 /**
- * Convert a complete genotype to a phenotype.
- * Integrates color, pattern, overlay, and sex.
+ * Convert a complete genotype into a phenotype object.
+ *
+ * @param genotype - Genotype containing the loci required to derive color, pattern, and overlay
+ * @param sex - Individual's sex; influences color determination for the O locus
+ * @returns Phenotype containing `color`, `pattern`, `overlay`, and `sex`
+ * @throws Error when any required locus (B, D, O, Cs, Wg, S, Ta) is missing from `genotype`
  */
 export function genotypeToPhenotype(genotype: Genotype, sex: Sex): Phenotype {
   // Ensure all required loci are present
@@ -137,8 +143,13 @@ export function genotypeToPhenotype(genotype: Genotype, sex: Sex): Phenotype {
 }
 
 /**
- * Format a phenotype as a human-readable string.
- * Example: "Seal Point Lynx" or "Blue Mitted"
+ * Format a phenotype into a human-readable string.
+ *
+ * Capitalizes the color and pattern names. If `overlay` is `"lynx"`, returns
+ * `"<Color> Point <Pattern> Lynx"`; otherwise returns `"<Color> <Pattern>"`.
+ *
+ * @param phenotype - Object containing `color`, `pattern`, and `overlay`
+ * @returns The formatted phenotype string, e.g. `"Seal Point Lynx"` or `"Blue Mitted"`
  */
 export function phenotypeToString(phenotype: Phenotype): string {
   const { color, pattern, overlay } = phenotype;

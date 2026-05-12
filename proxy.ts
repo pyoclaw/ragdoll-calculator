@@ -9,6 +9,12 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
+/**
+ * Refreshes the Supabase authentication cookie for the incoming Next.js request.
+ *
+ * @param request - The incoming Next.js request whose session cookie may be updated
+ * @returns A response that applies any session cookie updates to the client
+ */
 export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }

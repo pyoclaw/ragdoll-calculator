@@ -15,8 +15,11 @@ import { getAllPatterns } from "@/lib/data/patterns";
 import { genotypeToPhenotype } from "@/lib/genetics/phenotype";
 
 /**
- * Litter Planner Page
- * Simplified UX: select colors/patterns instead of raw genotypes
+ * Render the Litter Planner page allowing users to choose two parents' colors and patterns and view predicted offspring probabilities.
+ *
+ * The component infers simplified parental genotypes from selected phenotypes, performs a genetic cross, and displays calculated offspring probability results.
+ *
+ * @returns The React element containing parent selection UI, previews, the "Plan Litter" action, and a conditional results grid showing predicted litter outcomes.
  */
 export default function LitterPlannerPage() {
   const colors = getAllColors();

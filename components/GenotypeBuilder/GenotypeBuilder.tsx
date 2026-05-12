@@ -15,6 +15,18 @@ interface GenotypeBuilderProps {
   title?: string;
 }
 
+/**
+ * Render a genotype builder UI that lets users select alleles for a set of loci and notifies the parent of updates.
+ *
+ * This component maintains local genotype state (initialized from `initialGenotype` or a sex-dependent default),
+ * renders selectors for each locus, and calls `onGenotypeChange` whenever the genotype changes.
+ *
+ * @param initialGenotype - Optional starting genotype to populate the selectors
+ * @param sex - Sex value used to determine X-linked behavior; when `"male"`, the `O` locus is hemizygous (single selector)
+ * @param onGenotypeChange - Callback invoked with the updated genotype object whenever any allele selection changes
+ * @param title - Optional UI title displayed at the top of the card (defaults to `"Build Genotype"`)
+ * @returns The rendered React element for the genotype builder
+ */
 export function GenotypeBuilder({
   initialGenotype,
   sex,

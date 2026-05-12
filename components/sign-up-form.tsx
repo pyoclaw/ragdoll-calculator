@@ -17,6 +17,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
+/**
+ * Renders a sign-up form UI that collects email and password, validates the inputs,
+ * registers a new user with Supabase, displays authentication or validation errors,
+ * and navigates to a sign-up success page on success.
+ *
+ * The form shows a loading state while registration is in progress and displays
+ * a link to the login page for existing users.
+ *
+ * @returns The React element for the sign-up form
+ */
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -16,6 +16,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+/**
+ * Render a form that lets the current authenticated user set a new Supabase password and redirects on success.
+ *
+ * The component manages local `password`, `error`, and `isLoading` state, displays validation/error feedback,
+ * disables the submit button while the update is in progress, and navigates to `/protected` after a successful update.
+ *
+ * @returns The rendered password update form element
+ */
 export function UpdatePasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
