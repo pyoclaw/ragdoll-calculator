@@ -1,0 +1,105 @@
+# ragdoll-breeder-setup-steps.yml
+# Production-grade setup & onboarding guide for Ragdoll Breeder Tools
+# Purpose: Single source of truth for developers and breeders to get the system running reliably.
+# Maintainability: Modular, versioned, easy to convert to checklists or GitHub Actions.
+
+name: Ragdoll Breeder Tools - Setup & Onboarding
+project: Ragdoll Breeder Tools
+version: "1.0.0"
+last_updated: "2026-05-12"
+status: production-ready
+
+steps:
+  - id: 01-prerequisites
+    title: Prerequisites
+    description: Required accounts, tools and permissions.
+    actions:
+      - "Node.js 20+ and npm/pnpm installed"
+      - "GitHub account with access to the repository"
+      - "Supabase account (free tier sufficient for start)"
+      - "Optional: Vercel account for one-click deployment"
+    verification:
+      commands:
+        - "node --version"
+        - "npm --version"
+
+  - id: 02-clone-and-install
+    title: Clone & Install Dependencies
+    description: Get the codebase and install packages.
+    commands:
+      - "git clone <repository-url> ragdoll-breeder-tools"
+      - "cd ragdoll-breeder-tools"
+      - "npm install"
+    notes:
+      - "Use pnpm if preferred for faster installs and better disk usage"
+
+  - id: 03-supabase-setup
+    title: Supabase Database Configuration
+    description: Core backend setup (PostgreSQL + Auth).
+    reference: "See SUPABASE_SETUP.md for detailed screenshots and RLS policies"
+    actions:
+      - "Create new Supabase project"
+      - "Copy .env.example to .env.local and fill in credentials"
+      - "Run database migrations: npx drizzle-kit push"
+      - "Enable Row Level Security (RLS) policies as defined in schema"
+    verification:
+      - "Test database connection via Supabase dashboard or npm run db:check"
+
+  - id: 04-environment-variables
+    title: Environment Configuration
+    description: Secure configuration for development and production.
+    variables:
+      NEXT_PUBLIC_SUPABASE_URL: "Your Supabase project URL"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "Public anon key"
+      SUPABASE_SERVICE_ROLE_KEY: "Service role key (server only)"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000 (dev) or production domain"
+    security_note: "Never commit real keys. Use .env.local and .gitignore"
+
+  - id: 05-development-server
+    title: Start Development Environment
+    commands:
+      - "npm run dev"
+    verification:
+      - "Application available at http://localhost:3000"
+      - "Genetics calculator responds in real-time"
+      - "No TypeScript or build errors in terminal"
+
+  - id: 06-testing
+    title: Run Test Suite
+    description: Verify genetics engine accuracy.
+    commands:
+      - "npm run test:run"
+    expected_results:
+      - "34 unit tests passing"
+      - "100% pass rate on Punnett square and phenotype mapping"
+    coverage_note: "Genetics core is fully isolated and heavily tested"
+
+  - id: 07-production-build
+    title: Production Build Verification
+    commands:
+      - "npm run build"
+    success_criteria:
+      - "Build completes without errors"
+      - "Turbopack optimized output generated"
+      - "All pages and API routes functional"
+
+  - id: 08-deployment
+    title: Deployment Options
+    options:
+      - platform: "Vercel (recommended)"
+        steps:
+          - "Connect repository to Vercel"
+          - "Add environment variables in Vercel dashboard"
+          - "Deploy (automatic on main branch)"
+      - platform: "Docker / Self-hosted"
+        note: "Dockerfile can be added if needed"
+    post_deploy:
+      - "Update Supabase CORS settings for production domain"
+      - "Test live genetics calculator"
+
+  - id: 09-first-use
+    title: First Use Verification
+    actions:
+      - "Open Landing page → verify all sections load"
+      - "Navigate to Genetics Calculator"
+      - "Test a known cross (e.g.
