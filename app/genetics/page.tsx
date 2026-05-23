@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { GenotypeBuilder } from "@/components/GenotypeBuilder/GenotypeBuilder";
 import { ProbabilityGrid } from "@/components/ProbabilityGrid/ProbabilityGrid";
 import { cross } from "@/lib/genetics/calculator";
+import { formatOffspringForExport } from "@/lib/genetics/format";
 import { Genotype, OffspringProbability } from "@/lib/genetics/types";
 
 /**
@@ -103,12 +104,7 @@ export default function GeneticsPage() {
             <div className="mt-8 pt-8 border-t flex gap-4 justify-center">
               <button
                 onClick={() => {
-                  const text = offspring
-                    .map(
-                      (o) =>
-                        `${o.phenotype.color} ${o.phenotype.pattern}${o.phenotype.overlay === "lynx" ? " (Lynx)" : ""} - ${o.phenotype.sex === "male" ? "♂ Male" : "♀ Female"}: ${(o.probability * 100).toFixed(1)}%`
-                    )
-                    .join("\n");
+                  const text = formatOffspringForExport(offspring);
                   navigator.clipboard.writeText(text);
                   alert("Results copied to clipboard!");
                 }}

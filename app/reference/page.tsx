@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { CatCard } from "@/components/CatCard/CatCard";
 import { getAllColors } from "@/lib/data/colors";
-import { getAllPatterns } from "@/lib/data/patterns";
-import { Phenotype } from "@/lib/genetics/types";
+import { getAllOverlays, getAllPatterns } from "@/lib/data/patterns";
+import { buildReferencePhenotypes, filterReferencePhenotypes, ReferenceFilter } from "@/lib/genetics/reference";
 
 /**
  * Render the Ragdoll Color & Pattern Reference page showing every color and pattern combination.
@@ -18,31 +18,11 @@ import { Phenotype } from "@/lib/genetics/types";
 export default function ReferencePage() {
   const colors = getAllColors();
   const patterns = getAllPatterns();
+  const overlays = getAllOverlays();
+  const [filter, setFilter] = useState<ReferenceFilter>({ color: "all", pattern: "all", overlay: "all" });
 
-  // Generate all possible phenotype combinations (18 main ones)
-  const phenotypes: Phenotype[] = [];
-
-  // For each color and pattern combination
-  for (const color of colors) {
-    for (const pattern of patterns) {
-      // For simplicity, we'll show the non-lynx version (overlay: "none")
-      // And we'll alternate between male and female for variety
-      phenotypes.push({
-        color: color as any,
-        pattern: pattern as any,
-        overlay: "none",
-        sex: phenotypes.length % 2 === 0 ? "male" : "female",
-      });
-
-      // Also show lynx version
-      phenotypes.push({
-        color: color as any,
-        pattern: pattern as any,
-        overlay: "lynx",
-        sex: phenotypes.length % 2 === 0 ? "male" : "female",
-      });
-    }
-  }
+  const allPhenotypes = buildReferencePhenotypes();
+  const phenotypes = filterReferencePhenotypes(allPhenotypes, filter);
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -89,13 +69,25 @@ export default function ReferencePage() {
               </p>
             </div>
           </div>
+          <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <select className="rounded border px-3 py-2 bg-white" value={filter.color ?? "all"} onChange={(event) => setFilter((prev) => ({ ...prev, color: event.target.value as ReferenceFilter["color"] }))}>
+              <option value="all">All colors</option>
+              {colors.map((color) => <option key={color} value={color}>{color}</option>)}
+            </select>
+            <select className="rounded border px-3 py-2 bg-white" value={filter.pattern ?? "all"} onChange={(event) => setFilter((prev) => ({ ...prev, pattern: event.target.value as ReferenceFilter["pattern"] }))}>
+              <option value="all">All patterns</option>
+              {patterns.map((pattern) => <option key={pattern} value={pattern}>{pattern}</option>)}
+            </select>
+            <select className="rounded border px-3 py-2 bg-white" value={filter.overlay ?? "all"} onChange={(event) => setFilter((prev) => ({ ...prev, overlay: event.target.value as ReferenceFilter["overlay"] }))}>
+              <option value="all">All overlays</option>
+              {overlays.map((overlay) => <option key={overlay} value={overlay}>{overlay}</option>)}
+            </select>
+          </div>
         </div>
 
         {/* Grid of all combinations */}
         <div>
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">
-            All Color & Pattern Combinations
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">All Color & Pattern Combinations ({phenotypes.length})</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {phenotypes.map((phenotype, idx) => (
               <CatCard

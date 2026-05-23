@@ -47,7 +47,15 @@ interface GeneticsResponse {
  */
 export async function POST(request: NextRequest): Promise<NextResponse<GeneticsResponse>> {
   try {
-    const body = await request.json() as GeneticsRequest;
+    let body: GeneticsRequest;
+    try {
+      body = await request.json() as GeneticsRequest;
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
+        { status: 400 }
+      );
+    }
 
     // Validate request
     if (!body.parent1 || !body.parent2) {
